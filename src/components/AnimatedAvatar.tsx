@@ -12,7 +12,7 @@ const AnimatedAvatar = () => {
       <div className="relative w-full h-full border-2 border-black bg-white overflow-hidden group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300">
         <div className="w-full h-full animate-[float_6s_ease-in-out_infinite]">
           <img
-            src="C:\Users\SAAD'S DEVICE\Downloads\Gemini_Generated_Image_mmbvadmmbvadmmbv.png" //add image url
+            src="/images/avatar.png" //add image url
             alt="SAAD"
             className="w-full h-full object-cover object-top"
             loading="eager"
