@@ -31,7 +31,7 @@ const Finale = () => {
 
   const marqueeTags = [
     "SAAD 🚀",
-    "Full Stack Dev | Flutter | React | Blockchain | AI",
+    "Full Stack Dev | Python | React | Machine Learning | AI",
     "Designing clean UI/UX + Smart solutions🔖",
     "Exploring tech through Vibe Coding",
   ];
