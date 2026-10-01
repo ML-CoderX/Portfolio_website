@@ -17,11 +17,14 @@ const roles = [
   "Iot Builder",
 ];
 
+const nameLines = ["Saad", "AR"];
+
 const HeroSection = () => {
   const [roleIndex, setRoleIndex] = useState(0);
   const [displayText, setDisplayText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [cursorVisible, setCursorVisible] = useState(true);
+  const [heroProgress, setHeroProgress] = useState(0);
 
   // Blinking cursor
   useEffect(() => {
@@ -53,6 +56,16 @@ const HeroSection = () => {
 
     return () => clearTimeout(timeout);
   }, [displayText, isDeleting, roleIndex]);
+
+  useEffect(() => {
+    const updateHeroProgress = () => {
+      setHeroProgress(Math.min(1, Math.max(0, window.scrollY / window.innerHeight)));
+    };
+
+    updateHeroProgress();
+    window.addEventListener("scroll", updateHeroProgress, { passive: true });
+    return () => window.removeEventListener("scroll", updateHeroProgress);
+  }, []);
 
   return (
     <section id="hero" className="min-h-screen flex flex-col justify-center items-center relative px-6 overflow-hidden">
@@ -92,14 +105,37 @@ const HeroSection = () => {
         </div>
 
         {/* Name */}
-        <h1
-          className="heading-brutal leading-[0.85]"
-          style={{ fontSize: "clamp(48px, 10vw, 130px)" }}
+        <div
+          className="cinematic-name-wrap"
+          style={{
+            opacity: 1 - heroProgress * 0.3,
+            transform: `translate3d(0, ${heroProgress * -18}px, 0) scale(${1 - heroProgress * 0.045})`,
+          }}
         >
-          Saad
-          <br />
-          <span className="text-foreground/20">Beary.</span>
-        </h1>
+          <h1
+            aria-label="Saad AR"
+            className="heading-brutal cinematic-name"
+            style={{ fontSize: "clamp(48px, 10vw, 130px)" }}
+          >
+            {nameLines.map((line, lineIndex) => (
+              <span className="cinematic-name-line" key={line} aria-hidden="true">
+                {Array.from(line).map((letter, letterIndex) => {
+                  const animationIndex = lineIndex === 0 ? letterIndex : letterIndex + 4;
+                  return (
+                    <span
+                      className={lineIndex === 1 ? "cinematic-letter cinematic-letter-accent" : "cinematic-letter"}
+                      key={`${letter}-${letterIndex}`}
+                      style={{ animationDelay: `${180 + animationIndex * 110}ms` }}
+                    >
+                      {letter}
+                    </span>
+                  );
+                })}
+              </span>
+            ))}
+            <span className="cinematic-name-sweep" aria-hidden="true" />
+          </h1>
+        </div>
 
         {/* Typewriter role */}
         <div className="mt-6 h-8 flex items-center justify-center">
@@ -182,7 +218,7 @@ const HeroSection = () => {
         <div className="mt-10">
           <a
             href="\Purple and White Clean and Professional Resume (2).pdf" // Adjust path as needed for resume file
-            download="SAAD_Beary_Resume.pdf" // Adjust filename as needed for resume
+            download="SAAD_AR_Resume.pdf" // Adjust filename as needed for resume
             onClick={playClick}
             className="group relative inline-flex items-center gap-2 px-8 py-4 border-2 border-white bg-white text-black text-sm font-bold tracking-[0.2em] uppercase transition-all duration-300 shadow-[6px_6px_0px_0px_rgba(14,165,233,0.6)] hover:bg-black hover:text-white hover:border-white hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.9)]"
           >

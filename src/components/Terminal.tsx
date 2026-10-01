@@ -30,7 +30,7 @@ const Terminal = () => {
       type: "response",
       content: (
         <div className="mb-2">
-          <p>Welcome to Saad's Portfolio Terminal v1.0.0</p>
+          <p>Welcome to Saad AR's Portfolio Terminal v1.0.0</p>
           <p>
             I am a conversational AI. Type{" "}
             <span className="text-green-400">help</span> for commands, or just
@@ -98,7 +98,7 @@ const Terminal = () => {
           </div>
         );
       case "about":
-        return "I'm Saad Beary, a Computer Science student and freelancer focused on building practical software solutions using AI/ML, Angular/Ionic, Node.js, SQL, and IoT technologies.";
+        return "I'm Saad AR, a Computer Science student and freelancer focused on building practical software solutions using AI/ML, Angular/Ionic, Node.js, SQL, and IoT technologies.";
       case "skills":
         return (
           <div>
@@ -143,7 +143,7 @@ const Terminal = () => {
                 rel="noopener noreferrer"
                 className="text-blue-400 hover:underline"
               >
-                www.linkedin.com/in/saad-beary/
+                LinkedIn profile
               </a>
             </p>
             <p>
