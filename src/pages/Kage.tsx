@@ -1,4 +1,4 @@
-import { KageLandingPage } from "@/components/KageLandingPage";
+import { KageLandingPage } from "@designcodeio/threeui";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -13,7 +13,7 @@ const KagePage = () => {
         <ArrowLeft className="w-3.5 h-3.5" />
         <span>Return to Portfolio</span>
       </Link>
-      <KageLandingPage />
+      <KageLandingPage style={{ width: "100%", height: "100%" }} />
     </main>
   );
 };

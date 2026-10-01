@@ -5,6 +5,9 @@ interface KageLandingPageProps {
   sourceUrl?: string;
   /** Optional ARIA label for the frame */
   title?: string;
+  /** If true, runs Kage purely as an ambient 3D background behind content */
+  backgroundOnly?: boolean;
+  className?: string;
 }
 
 /**
@@ -19,10 +22,17 @@ interface KageLandingPageProps {
  * were authored, and nothing from the React graph enters the frame.
  */
 export function KageLandingPage({
-  sourceUrl = "/landing-pages/kage.html",
+  sourceUrl,
   title = "Kage — Where stillness reveals the unseen",
+  backgroundOnly = false,
+  className,
 }: KageLandingPageProps) {
   const frameRef = useRef<HTMLIFrameElement>(null);
+  const resolvedUrl =
+    sourceUrl ??
+    (backgroundOnly
+      ? "/landing-pages/kage.html?bg=1"
+      : "/landing-pages/kage.html");
 
   /* Relay document visibility into the iframe so the Three.js RAF loop
      honours tab-hidden state exactly as the original page does. */
@@ -43,18 +53,11 @@ export function KageLandingPage({
   return (
     <iframe
       ref={frameRef}
-      src={sourceUrl}
+      src={resolvedUrl}
       title={title}
-      /*
-       * allow-scripts       — Three.js runtime and all authored JS
-       * allow-same-origin   — canvas texture uploads, font fetch, local asset XHR
-       * allow-forms         — any form inside the page
-       * allow-popups        — any <a target="_blank"> inside the page
-       * allow-pointer-lock  — authored pointer-lock on cursor
-       * allow-top-navigation-by-user-activation — internal hash-nav links
-       */
+      className={className}
       sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-pointer-lock allow-top-navigation-by-user-activation"
-      loading="lazy"
+      loading={backgroundOnly ? "eager" : "lazy"}
       style={{
         display: "block",
         width: "100%",
@@ -62,8 +65,10 @@ export function KageLandingPage({
         border: "none",
         outline: "none",
         background: "#05070a",
+        pointerEvents: backgroundOnly ? "none" : "auto",
       }}
-      aria-label={title}
+      aria-hidden={backgroundOnly ? "true" : undefined}
+      aria-label={backgroundOnly ? undefined : title}
     />
   );
 }

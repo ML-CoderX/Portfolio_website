@@ -37,9 +37,9 @@ const Finale = () => {
   ];
 
   return (
-    <section className="relative w-full bg-white border-t-8 border-black pt-20 overflow-hidden">
+    <section className="relative w-full bg-[#070b0f]/85 backdrop-blur-md border-t-4 border-white/20 pt-20 overflow-hidden text-white">
       {/* ... marquee ... */}
-      <div className="absolute top-0 left-0 w-full py-4 bg-black overflow-hidden flex whitespace-nowrap">
+      <div className="absolute top-0 left-0 w-full py-4 bg-black/80 border-b border-white/10 overflow-hidden flex whitespace-nowrap">
         <div className="animate-marquee flex items-center shrink-0">
           {[...Array(10)].map((_, i) => (
             <div key={i} className="flex items-center">
@@ -59,12 +59,12 @@ const Finale = () => {
       <div className="max-w-6xl mx-auto px-6 py-20 flex flex-col items-center">
         {/* ... content ... */}
         <div className="relative mb-20 text-center">
-          <h2 className="text-[12vw] md:text-[8vw] font-black uppercase leading-none tracking-tighter text-black/5 absolute -top-1/2 left-1/2 -translate-x-1/2 select-none pointer-events-none">
+          <h2 className="text-[12vw] md:text-[8vw] font-black uppercase leading-none tracking-tighter text-white/5 absolute -top-1/2 left-1/2 -translate-x-1/2 select-none pointer-events-none">
             THANK YOU
           </h2>
-          <p className="text-xl md:text-3xl font-black uppercase tracking-tight italic z-10 relative">
+          <p className="text-xl md:text-3xl font-black uppercase tracking-tight italic z-10 relative text-white">
             Let's build something{" "}
-            <span className="text-white bg-black px-4 py-1 not-italic">
+            <span className="text-black bg-cyan-400 font-black px-4 py-1 not-italic">
               unforgettable
             </span>{" "}
             together.
@@ -78,10 +78,10 @@ const Finale = () => {
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex flex-col items-center justify-center p-8 border-2 border-black bg-white hover:bg-black transition-all duration-300 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]"
+              className="group flex flex-col items-center justify-center p-8 border-2 border-white/20 bg-card/70 hover:bg-white hover:text-black transition-all duration-300 shadow-[6px_6px_0px_0px_rgba(255,255,255,0.1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]"
             >
-              <link.icon className="w-8 h-8 group-hover:text-white transition-colors duration-300" />
-              <span className="mt-4 font-mono text-xs uppercase tracking-widest font-black group-hover:text-white">
+              <link.icon className="w-8 h-8 group-hover:text-black transition-colors duration-300" />
+              <span className="mt-4 font-mono text-xs uppercase tracking-widest font-black group-hover:text-black">
                 {link.label}
               </span>
             </a>
@@ -89,29 +89,29 @@ const Finale = () => {
         </div>
 
         <div className="flex flex-col md:flex-row items-center gap-4 text-center">
-          <div className="flex items-center gap-2 px-4 py-2 bg-green-100 border-2 border-green-600 rounded-full">
-            <span className="w-2 h-2 bg-green-600 rounded-full animate-pulse" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-green-800">
+          <div className="flex items-center gap-2 px-4 py-2 bg-green-950/60 border border-green-500/50 rounded-full">
+            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-green-300">
               Available for Freelance Projects
             </span>
           </div>
-          <p className="text-xs font-mono text-black/70 uppercase tracking-widest leading-loose max-w-sm">
+          <p className="text-xs font-mono text-white/70 uppercase tracking-widest leading-loose max-w-sm">
             From India 🇮🇳 to the World 🌍 • Crafting Scalable Digital Products
           </p>
         </div>
       </div>
 
       {/* Extreme Bottom Bar */}
-      <div className="w-full bg-white pt-10 pb-24 md:pb-10 px-6 mt-auto border-t border-black/10">
+      <div className="w-full bg-black/40 pt-10 pb-24 md:pb-10 px-6 mt-auto border-t border-white/10">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8 md:gap-4 opacity-70">
-          <p className="text-[10px] md:text-[11px] font-mono text-black uppercase tracking-[0.1em] md:tracking-[0.2em] text-center md:text-left">
+          <p className="text-[10px] md:text-[11px] font-mono text-white uppercase tracking-[0.1em] md:tracking-[0.2em] text-center md:text-left">
             © {currentYear} SAAD
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px] md:text-[11px] font-mono text-black uppercase tracking-[0.1em] md:tracking-[0.2em] text-center md:text-right font-medium">
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px] md:text-[11px] font-mono text-white uppercase tracking-[0.1em] md:tracking-[0.2em] text-center md:text-right font-medium">
             <span className="whitespace-nowrap">Designed & Engineered</span>
             <span className="flex items-center gap-2">
               <span>with</span>
-              <Heart className="w-3.5 h-3.5 text-black fill-black animate-heartbeat inline-block" />
+              <Heart className="w-3.5 h-3.5 text-red-500 fill-red-500 animate-heartbeat inline-block" />
               <span>by SAAD</span>
             </span>
           </div>

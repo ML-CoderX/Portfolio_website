@@ -46,8 +46,8 @@ const ContactSection = () => {
           </p>
 
           <div className="space-y-6">
-            <div className="group flex items-center gap-4 p-4 border border-foreground/10 bg-white/50 hover:border-black transition-colors duration-300">
-              <div className="p-3 bg-black text-white self-start">
+            <div className="group flex items-center gap-4 p-4 border border-white/15 bg-card/70 backdrop-blur-md hover:border-white transition-colors duration-300">
+              <div className="p-3 bg-white/10 text-white border border-white/20 self-start">
                 <Mail className="w-5 h-5" />
               </div>
               <div className="flex-1 min-w-0">
@@ -60,19 +60,19 @@ const ContactSection = () => {
               </div>
               <button
                 onClick={copyEmail}
-                className="p-2 hover:bg-black/5 rounded-full transition-colors relative"
+                className="p-2 hover:bg-white/10 rounded-full transition-colors relative"
                 title="Copy email"
               >
                 {copied ? (
-                  <Check className="w-4 h-4 text-green-600" />
+                  <Check className="w-4 h-4 text-green-400" />
                 ) : (
                   <Copy className="w-4 h-4 text-foreground/40" />
                 )}
               </button>
             </div>
 
-            <div className="flex items-center gap-4 p-4 border border-foreground/10 bg-white/50 hover:border-black transition-colors duration-300">
-              <div className="p-3 bg-black text-white self-start">
+            <div className="flex items-center gap-4 p-4 border border-white/15 bg-card/70 backdrop-blur-md hover:border-white transition-colors duration-300">
+              <div className="p-3 bg-white/10 text-white border border-white/20 self-start">
                 <MessageCircle className="w-5 h-5" />
               </div>
               <div>
@@ -93,7 +93,6 @@ const ContactSection = () => {
                 { Icon: Github, href: "https://github.com/ML-CoderX" },
                 { Icon: Linkedin, href: "https://www.linkedin.com/in/saad-beary/" },
                 { Icon: InstagramIcon, href: "https://www.instagram.com/_s_a_a_d_0/" },
-              ,
               ].map(({ Icon, href }, i) => (
                 <a
                   key={i}
@@ -101,7 +100,7 @@ const ContactSection = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={playClick}
-                  className="p-3 border border-foreground/20 hover:bg-black hover:text-white transition-all duration-300 hover:-translate-y-1"
+                  className="p-3 border border-white/20 bg-card/60 backdrop-blur-md hover:bg-white hover:text-black transition-all duration-300 hover:-translate-y-1 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)]"
                 >
                   <Icon className="w-5 h-5" />
                 </a>
@@ -119,9 +118,9 @@ const ContactSection = () => {
               placeholder=" "
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="peer w-full bg-transparent border-2 border-foreground/10 px-4 py-4 text-foreground focus:outline-none focus:border-black transition-colors"
+              className="peer w-full bg-card/50 backdrop-blur-sm border-2 border-white/20 px-4 py-4 text-foreground focus:outline-none focus:border-white transition-colors"
             />
-            <label className="absolute left-4 top-4 text-foreground/40 text-sm uppercase tracking-widest transition-all duration-300 pointer-events-none peer-focus:-translate-y-7 peer-focus:text-xs peer-focus:text-black peer-focus:bg-background peer-focus:px-2 peer-[:not(:placeholder-shown)]:-translate-y-7 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-black peer-[:not(:placeholder-shown)]:bg-background peer-[:not(:placeholder-shown)]:px-2">
+            <label className="absolute left-4 top-4 text-foreground/40 text-sm uppercase tracking-widest transition-all duration-300 pointer-events-none peer-focus:-translate-y-7 peer-focus:text-xs peer-focus:text-white peer-focus:bg-[#05070a] peer-focus:px-2 peer-[:not(:placeholder-shown)]:-translate-y-7 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-white peer-[:not(:placeholder-shown)]:bg-[#05070a] peer-[:not(:placeholder-shown)]:px-2">
               Your Name
             </label>
           </div>
@@ -133,9 +132,9 @@ const ContactSection = () => {
               placeholder=" "
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="peer w-full bg-transparent border-2 border-foreground/10 px-4 py-4 text-foreground focus:outline-none focus:border-black transition-colors"
+              className="peer w-full bg-card/50 backdrop-blur-sm border-2 border-white/20 px-4 py-4 text-foreground focus:outline-none focus:border-white transition-colors"
             />
-            <label className="absolute left-4 top-4 text-foreground/40 text-sm uppercase tracking-widest transition-all duration-300 pointer-events-none peer-focus:-translate-y-7 peer-focus:text-xs peer-focus:text-black peer-focus:bg-background peer-focus:px-2 peer-[:not(:placeholder-shown)]:-translate-y-7 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-black peer-[:not(:placeholder-shown)]:bg-background peer-[:not(:placeholder-shown)]:px-2">
+            <label className="absolute left-4 top-4 text-foreground/40 text-sm uppercase tracking-widest transition-all duration-300 pointer-events-none peer-focus:-translate-y-7 peer-focus:text-xs peer-focus:text-white peer-focus:bg-[#05070a] peer-focus:px-2 peer-[:not(:placeholder-shown)]:-translate-y-7 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-white peer-[:not(:placeholder-shown)]:bg-[#05070a] peer-[:not(:placeholder-shown)]:px-2">
               Email Address
             </label>
           </div>
@@ -147,20 +146,20 @@ const ContactSection = () => {
               placeholder=" "
               value={form.message}
               onChange={(e) => setForm({ ...form, message: e.target.value })}
-              className="peer w-full bg-transparent border-2 border-foreground/10 px-4 py-4 text-foreground focus:outline-none focus:border-black transition-colors resize-none"
+              className="peer w-full bg-card/50 backdrop-blur-sm border-2 border-white/20 px-4 py-4 text-foreground focus:outline-none focus:border-white transition-colors resize-none"
             />
-            <label className="absolute left-4 top-4 text-foreground/40 text-sm uppercase tracking-widest transition-all duration-300 pointer-events-none peer-focus:-translate-y-7 peer-focus:text-xs peer-focus:text-black peer-focus:bg-background peer-focus:px-2 peer-[:not(:placeholder-shown)]:-translate-y-7 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-black peer-[:not(:placeholder-shown)]:bg-background peer-[:not(:placeholder-shown)]:px-2">
+            <label className="absolute left-4 top-4 text-foreground/40 text-sm uppercase tracking-widest transition-all duration-300 pointer-events-none peer-focus:-translate-y-7 peer-focus:text-xs peer-focus:text-white peer-focus:bg-[#05070a] peer-focus:px-2 peer-[:not(:placeholder-shown)]:-translate-y-7 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:text-white peer-[:not(:placeholder-shown)]:bg-[#05070a] peer-[:not(:placeholder-shown)]:px-2">
               Message
             </label>
           </div>
 
           <button
             type="submit"
-            className="w-full group relative flex items-center justify-center gap-3 px-8 py-4 bg-black text-white font-mono uppercase tracking-widest overflow-hidden transition-all duration-300 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.2)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,0.5)] hover:-translate-y-1 active:translate-y-0 active:shadow-none"
+            className="w-full group relative flex items-center justify-center gap-3 px-8 py-4 bg-white text-black font-mono uppercase tracking-widest overflow-hidden transition-all duration-300 shadow-[6px_6px_0px_0px_rgba(14,165,233,0.6)] hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.8)] hover:-translate-y-1 active:translate-y-0 active:shadow-none"
           >
             <span className="relative z-10 font-bold">Send via WhatsApp</span>
             <MessageCircle className="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" />
-            <div className="absolute inset-0 bg-green-600 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+            <div className="absolute inset-0 bg-green-500 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
           </button>
         </form>
       </div>
