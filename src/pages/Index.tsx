@@ -13,7 +13,7 @@ import { PortfolioBackground } from "@/components/PortfolioBackground";
 
 const Index = () => {
   return (
-    <div className="relative min-h-screen text-foreground selection:bg-cyan-500 selection:text-black">
+    <div className="relative isolate min-h-screen text-foreground selection:bg-cyan-500 selection:text-black">
       {/* Living Atmospheric 3D AI Technologist Background */}
       <PortfolioBackground />
 
