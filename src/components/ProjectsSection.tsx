@@ -6,8 +6,23 @@ import { playHover, playClick } from "@/hooks/useSoundEffects";
 
 const projects = [
   {
-    title: "cashlio",
+    title: "Kage",
     isNew: true,
+    description:
+      "An interactive 3D temple journey built with Three.js and WebGL, featuring scroll-driven cinematography, atmospheric ambient audio, reactive lighting, and rich visual scenes.",
+    tags: [
+      "Three.js",
+      "WebGL",
+      "3D Graphics",
+      "Web Audio",
+      "Interactive",
+    ],
+    githubUrl: "https://github.com/ML-CoderX",
+    liveUrl: "/kage",
+  },
+  {
+    title: "cashlio",
+    isNew: false,
     description:
       "Cashlio is an lonic + Angular personal finance app for tracking credits/debits across profiles, viewing dashboard summaries, and exporting history reports.",
     tags: [
@@ -90,26 +105,34 @@ const ProjectsSection = () => (
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 mt-8 pt-6 border-t border-black/10">
-            <a
-              href={project.githubUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={playClick}
-              className="flex items-center justify-center gap-2 px-4 py-2 border-2 border-black bg-white text-[10px] font-black uppercase tracking-wider transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-black hover:text-white"
-            >
-              <Github className="w-3.5 h-3.5" />
-              Source
-            </a>
-            <a
-              href={project.liveUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={playClick}
-              className="flex items-center justify-center gap-2 px-4 py-2 border-2 border-black bg-white text-[10px] font-black uppercase tracking-wider transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-black hover:text-white"
-            >
-              <ExternalLink className="w-3.5 h-3.5" />
-              Live Demo
-            </a>
+            {project.githubUrl && (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={playClick}
+                className="flex items-center justify-center gap-2 px-4 py-2 border-2 border-black bg-white text-[10px] font-black uppercase tracking-wider transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-black hover:text-white"
+              >
+                <Github className="w-3.5 h-3.5" />
+                Source
+              </a>
+            )}
+            {project.liveUrl ? (
+              <a
+                href={project.liveUrl}
+                target={project.liveUrl.startsWith("http") ? "_blank" : undefined}
+                rel={
+                  project.liveUrl.startsWith("http")
+                    ? "noopener noreferrer"
+                    : undefined
+                }
+                onClick={playClick}
+                className="flex items-center justify-center gap-2 px-4 py-2 border-2 border-black bg-white text-[10px] font-black uppercase tracking-wider transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-black hover:text-white"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                Live Demo
+              </a>
+            ) : null}
           </div>
         </div>
       ))}
