@@ -54,7 +54,7 @@ const skillCategories = [
     "GitHub",
     "VS Code",
   ],
-},,
+},
 ];
 
 const SkillsSection = () => (
@@ -70,15 +70,15 @@ const SkillsSection = () => (
             animationFillMode: "forwards",
           }}
         >
-          <div className="flex flex-col h-full border-t-2 border-black pt-4">
-            <h3 className="text-xs font-mono uppercase tracking-[0.2em] mb-6 text-black/40 group-hover:text-black transition-colors duration-300">
+          <div className="flex flex-col h-full border-t-2 border-white/20 pt-4">
+            <h3 className="text-xs font-mono uppercase tracking-[0.2em] mb-6 text-foreground/40 group-hover:text-foreground transition-colors duration-300">
               {category.title}
             </h3>
             <div className="flex flex-wrap gap-2">
               {category.skills.map((skill) => (
                 <span
                   key={skill}
-                  className="px-3 py-1.5 border border-black/5 text-xs font-medium hover:border-black hover:bg-black hover:text-white transition-all duration-300 cursor-default"
+                  className="px-3 py-1.5 border border-white/10 bg-card/60 backdrop-blur-sm text-xs font-medium hover:border-white hover:bg-white hover:text-black transition-all duration-300 cursor-default"
                 >
                   {skill}
                 </span>
@@ -89,13 +89,13 @@ const SkillsSection = () => (
       ))}
     </div>
 
-    <div className="w-full pt-12 border-t border-black/5">
+    <div className="w-full pt-12 border-t border-white/10">
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
-          <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-black/40">
+          <h3 className="text-xs font-mono uppercase tracking-[0.2em] text-foreground/40">
             Activity Graph
           </h3>
-          <div className="h-[1px] flex-1 bg-black/5 mx-6"></div>
+          <div className="h-[1px] flex-1 bg-white/10 mx-6"></div>
         </div>
         <GithubGraph />
       </div>

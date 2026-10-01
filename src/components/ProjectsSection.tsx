@@ -6,23 +6,8 @@ import { playHover, playClick } from "@/hooks/useSoundEffects";
 
 const projects = [
   {
-    title: "Kage",
-    isNew: true,
-    description:
-      "An interactive 3D temple journey built with Three.js and WebGL, featuring scroll-driven cinematography, atmospheric ambient audio, reactive lighting, and rich visual scenes.",
-    tags: [
-      "Three.js",
-      "WebGL",
-      "3D Graphics",
-      "Web Audio",
-      "Interactive",
-    ],
-    githubUrl: "https://github.com/ML-CoderX",
-    liveUrl: "/kage",
-  },
-  {
     title: "cashlio",
-    isNew: false,
+    isNew: true,
     description:
       "Cashlio is an lonic + Angular personal finance app for tracking credits/debits across profiles, viewing dashboard summaries, and exporting history reports.",
     tags: [
@@ -77,10 +62,10 @@ const ProjectsSection = () => (
         <div
           key={project.title}
           onMouseEnter={playHover}
-          className="group relative border-2 border-black p-5 flex flex-col justify-between hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-300 bg-white"
+          className="group relative border-2 border-white/20 p-5 flex flex-col justify-between hover:border-white hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-300 bg-card/85 backdrop-blur-md"
         >
           {"isNew" in project && project.isNew && (
-            <div className="absolute -top-3 -right-3 bg-black text-white px-2 py-1 text-[10px] font-black uppercase tracking-tighter border-2 border-black z-10 rotate-12">
+            <div className="absolute -top-3 -right-3 bg-cyan-400 text-black px-2 py-1 text-[10px] font-black uppercase tracking-tighter border border-cyan-300 z-10 rotate-12 shadow-md">
               LATEST WORK
             </div>
           )}
@@ -96,7 +81,7 @@ const ProjectsSection = () => (
                 <Badge
                   key={tag}
                   variant="secondary"
-                  className="font-mono text-[10px] font-bold border border-black/10 px-1.5 py-0"
+                  className="font-mono text-[10px] font-bold border border-white/20 bg-white/5 text-white/90 px-1.5 py-0"
                 >
                   {tag}
                 </Badge>
@@ -104,14 +89,14 @@ const ProjectsSection = () => (
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 mt-8 pt-6 border-t border-black/10">
+          <div className="flex flex-col sm:flex-row gap-3 mt-8 pt-6 border-t border-white/10">
             {project.githubUrl && (
               <a
                 href={project.githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={playClick}
-                className="flex items-center justify-center gap-2 px-4 py-2 border-2 border-black bg-white text-[10px] font-black uppercase tracking-wider transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-black hover:text-white"
+                className="flex items-center justify-center gap-2 px-4 py-2 border-2 border-white/30 bg-black/60 text-white text-[10px] font-black uppercase tracking-wider transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-white hover:text-black hover:border-white"
               >
                 <Github className="w-3.5 h-3.5" />
                 Source
@@ -127,7 +112,7 @@ const ProjectsSection = () => (
                     : undefined
                 }
                 onClick={playClick}
-                className="flex items-center justify-center gap-2 px-4 py-2 border-2 border-black bg-white text-[10px] font-black uppercase tracking-wider transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-black hover:text-white"
+                className="flex items-center justify-center gap-2 px-4 py-2 border-2 border-white/30 bg-black/60 text-white text-[10px] font-black uppercase tracking-wider transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.15)] hover:shadow-none hover:translate-x-[2px] hover:translate-y-[2px] hover:bg-white hover:text-black hover:border-white"
               >
                 <ExternalLink className="w-3.5 h-3.5" />
                 Live Demo

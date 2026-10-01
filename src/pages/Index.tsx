@@ -9,10 +9,14 @@ import ContactSection from "@/components/ContactSection";
 import ScrollToTop from "@/components/ScrollToTop";
 import Terminal from "@/components/Terminal";
 import Finale from "@/components/Finale";
+import { PortfolioBackground } from "@/components/PortfolioBackground";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="relative min-h-screen text-foreground selection:bg-cyan-500 selection:text-black">
+      {/* Living Atmospheric 3D AI Technologist Background */}
+      <PortfolioBackground />
+
       <Navbar />
       <ScrollToTop />
       <Terminal />

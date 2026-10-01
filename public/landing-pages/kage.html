@@ -60,6 +60,21 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 }
 .page{ position:relative; z-index:10; }
 
+body.bg-mode{ background:#05070a !important; overflow:hidden !important; }
+body.bg-mode .page,
+body.bg-mode #nav,
+body.bg-mode #pre,
+body.bg-mode #cursor,
+body.bg-mode #rail,
+body.bg-mode .foot,
+body.bg-mode #audio-ctrl{
+  display:none !important;
+}
+body.bg-mode #gl{
+  z-index:0;
+  pointer-events:none;
+}
+
 /* ============================================================= type */
 .eyebrow{
   font-size:10px; font-weight:500; letter-spacing:.22em; text-transform:uppercase;
@@ -2118,10 +2133,48 @@ window.addEventListener('resize',()=>{
 document.documentElement.style.setProperty('--vw',vpW()+'px');
 
 /* ================================================= boot */
+let isBgMode = window.location.search.includes('bg=1') || window.location.search.includes('bg=true');
+try {
+  if (window.parent !== window && (window.parent.location.pathname === '/' || window.parent.location.pathname === '')) {
+    isBgMode = true;
+  }
+} catch (e) {}
+
+if(isBgMode){
+  document.body.classList.add('bg-mode');
+  try{
+    const topWin = window.parent !== window ? window.parent : null;
+    if(topWin){
+      const handleScroll = () => {
+        const doc = topWin.document.documentElement;
+        const max = Math.max(1, (doc.scrollHeight || topWin.document.body.scrollHeight) - topWin.innerHeight);
+        const frac = Math.max(0, Math.min(1, topWin.scrollY / max));
+        const camIdx = Math.min(CAMS.length - 1, Math.round(frac * (CAMS.length - 1)));
+        setCam(camIdx);
+      };
+      topWin.addEventListener('scroll', handleScroll, { passive: true });
+      setTimeout(handleScroll, 100);
+
+      topWin.addEventListener('mousemove', e => {
+        RIG.tmx = (e.clientX / (topWin.innerWidth || 1) - .5) * 2;
+        RIG.tmy = -(e.clientY / (topWin.innerHeight || 1) - .5) * 2;
+      }, { passive: true });
+    }
+  }catch(e){
+    console.warn('Parent relay not available:', e);
+  }
+}
+
 try{
   initGL();
   build();
-  runPreloader(()=>requestAnimationFrame(tick));
+  if(isBgMode){
+    const pre=document.getElementById('pre');
+    if(pre)pre.classList.add('done');
+    requestAnimationFrame(tick);
+  }else{
+    runPreloader(()=>requestAnimationFrame(tick));
+  }
 }catch(err){
   console.warn('Kage WebGL unavailable:',err.message);
   document.body.classList.add('no-webgl');
