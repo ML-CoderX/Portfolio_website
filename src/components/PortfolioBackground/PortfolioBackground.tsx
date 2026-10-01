@@ -119,31 +119,16 @@ export function PortfolioBackground() {
         <canvas
           ref={canvasRef}
           className="absolute inset-0 w-full h-full block"
-          style={{
-            background: "#030508",
-          }}
         />
       ) : (
-        /* Graceful CSS animated atmospheric fallback */
-        <div className="absolute inset-0 w-full h-full bg-[#030508] bg-gradient-to-b from-[#060c18] via-[#03060d] to-[#020306] animate-pulse" />
+        <div className="absolute inset-0 w-full h-full bg-[#030508]" />
       )}
 
-      {/* Layer 2: Vignette Depth Overlay */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 120% 90% at 50% 45%, transparent 35%, rgba(2, 4, 8, 0.65) 75%, #020407 100%)",
-        }}
-      />
-
-      {/* Layer 3: Subtle Noise Grain Texture */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.035] mix-blend-overlay"
         style={{
-          backgroundImage:
-            "radial-gradient(rgba(255,255,255,0.15) 1px, transparent 0)",
-          backgroundSize: "24px 24px",
+          backgroundImage: "url('/images/paper-texture.png')",
+          backgroundSize: "360px 360px",
         }}
       />
     </div>
