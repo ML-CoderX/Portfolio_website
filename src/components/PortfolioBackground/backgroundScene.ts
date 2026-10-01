@@ -91,8 +91,10 @@ export function createBackgroundScene(options: BackgroundSceneOptions): Backgrou
   roamingLight.position.set(-7, 2, 4);
   scene.add(roamingLight);
 
-  const sceneObjects = new THREE.Group();
-  scene.add(sceneObjects);
+  const farLayer = new THREE.Group();
+  const midgroundLayer = new THREE.Group();
+  const foregroundLayer = new THREE.Group();
+  scene.add(farLayer, midgroundLayer, foregroundLayer);
 
   const sharedSlateGeometry = new THREE.BoxGeometry(1, 1, 1);
   const sharedStoneGeometry = new THREE.IcosahedronGeometry(1, 1);
@@ -115,6 +117,67 @@ export function createBackgroundScene(options: BackgroundSceneOptions): Backgrou
   const obeliskMaterial = makeStoneMaterial(0x2a3d52);
   const darkerStoneMaterial = makeStoneMaterial(0x172231);
   const facetedMaterial = makeStoneMaterial(0x3a536b);
+  const ridgeMaterial = new THREE.MeshBasicMaterial({
+    color: 0x1a2d40,
+    transparent: true,
+    opacity: 0.86,
+    depthWrite: false,
+  });
+  const branchMaterial = new THREE.LineBasicMaterial({
+    color: 0x1a2b3b,
+    transparent: true,
+    opacity: 0.42,
+    depthWrite: false,
+  });
+  materials.push(ridgeMaterial, branchMaterial);
+
+  const createRidge = (y: number, z: number, scale: number, opacity: number) => {
+    const shape = new THREE.Shape();
+    shape.moveTo(-22, -5);
+    shape.lineTo(-22, -0.8);
+    shape.lineTo(-15, 1.7);
+    shape.lineTo(-10, -0.2);
+    shape.lineTo(-4, 3.2);
+    shape.lineTo(2, 0.8);
+    shape.lineTo(8, 2.6);
+    shape.lineTo(15, -0.1);
+    shape.lineTo(22, 1.4);
+    shape.lineTo(22, -5);
+    shape.closePath();
+    const geometry = new THREE.ShapeGeometry(shape);
+    geometry.scale(scale, scale, 1);
+    geometries.push(geometry);
+    const material = ridgeMaterial.clone();
+    material.opacity = opacity;
+    materials.push(material);
+    const ridge = new THREE.Mesh(geometry, material);
+    ridge.position.set(0, y, z);
+    farLayer.add(ridge);
+  };
+
+  [-1, -13, -25, -37, -49].forEach((y, index) => {
+    createRidge(y, -22, 1.06, 0.44);
+    createRidge(y - 1.4, -15, 0.9, 0.62 - index * 0.025);
+  });
+
+  const createBranch = (x: number, y: number, direction: number) => {
+    const points = [
+      new THREE.Vector3(x, y - 6, -4),
+      new THREE.Vector3(x + direction * 1.1, y - 1.5, -3),
+      new THREE.Vector3(x + direction * 3.6, y + 0.8, -3.2),
+      new THREE.Vector3(x + direction * 5.8, y + 3.8, -4),
+      new THREE.Vector3(x + direction * 3.6, y + 0.8, -3.2),
+      new THREE.Vector3(x + direction * 5.7, y + 0.3, -3.6),
+    ];
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+    geometries.push(geometry);
+    foregroundLayer.add(new THREE.Line(geometry, branchMaterial));
+  };
+
+  createBranch(-13, 2, 1);
+  createBranch(13, -16, -1);
+  createBranch(-13, -30, 1);
+  createBranch(13, -44, -1);
 
   const obelisks: THREE.Mesh[] = [];
   const makeObelisk = (x: number, y: number, z: number, scale: THREE.Vector3, tilt: number) => {
@@ -122,7 +185,7 @@ export function createBackgroundScene(options: BackgroundSceneOptions): Backgrou
     obelisk.position.set(x, y, z);
     obelisk.scale.copy(scale);
     obelisk.rotation.set(tilt, tilt * 0.28, tilt * -0.16);
-    sceneObjects.add(obelisk);
+    midgroundLayer.add(obelisk);
     obelisks.push(obelisk);
   };
 
@@ -144,7 +207,7 @@ export function createBackgroundScene(options: BackgroundSceneOptions): Backgrou
     slab.position.copy(position);
     slab.scale.set(5.4, 0.36, 3.4);
     slab.rotation.set(index % 2 ? -0.16 : 0.12, index * 0.35, index % 2 ? -0.08 : 0.08);
-    sceneObjects.add(slab);
+    midgroundLayer.add(slab);
     slabs.push(slab);
   });
 
@@ -159,7 +222,7 @@ export function createBackgroundScene(options: BackgroundSceneOptions): Backgrou
     sculpture.position.copy(position);
     sculpture.scale.setScalar(scale);
     sculpture.rotation.set(index * 0.35, index * 0.72, index * -0.16);
-    sceneObjects.add(sculpture);
+    midgroundLayer.add(sculpture);
     sculptures.push(sculpture);
   });
 
@@ -179,9 +242,22 @@ export function createBackgroundScene(options: BackgroundSceneOptions): Backgrou
     const sprite = new THREE.Sprite(material);
     sprite.position.set(index % 2 ? -5.5 : 5.5, -index * 11 - 1, -8);
     sprite.scale.set(10, 10, 1);
-    scene.add(sprite);
+    farLayer.add(sprite);
     glowSprites.push(sprite);
   });
+
+  const moonMaterial = new THREE.SpriteMaterial({
+    map: glowTexture,
+    color: 0xc0d3e5,
+    transparent: true,
+    opacity: 0.58,
+    depthWrite: false,
+  });
+  materials.push(moonMaterial);
+  const moon = new THREE.Sprite(moonMaterial);
+  moon.position.set(-7.8, 5.2, -10);
+  moon.scale.set(6, 6, 1);
+  farLayer.add(moon);
 
   const particleCount = isMobile ? 46 : 96;
   const dustPositions = new Float32Array(particleCount * 3);
@@ -210,7 +286,7 @@ export function createBackgroundScene(options: BackgroundSceneOptions): Backgrou
     sizeAttenuation: true,
   });
   materials.push(dustMaterial);
-  scene.add(new THREE.Points(dustGeometry, dustMaterial));
+  foregroundLayer.add(new THREE.Points(dustGeometry, dustMaterial));
 
   const targetCameraPosition = SECTION_WAYPOINTS[0].position.clone();
   const targetLookAt = SECTION_WAYPOINTS[0].target.clone();
@@ -258,6 +334,10 @@ export function createBackgroundScene(options: BackgroundSceneOptions): Backgrou
       scene.background = fogColor;
       roamingLight.color.lerp(targetAccentColor, Math.min(delta * 1.2, 0.05));
 
+      farLayer.position.set(pointerX * 0.12, pointerY * 0.04, 0);
+      midgroundLayer.position.set(pointerX * 0.3, pointerY * 0.1, 0);
+      foregroundLayer.position.set(pointerX * 0.58, pointerY * 0.2, 0);
+
       if (!reducedMotion) {
         const time = now * 0.0001;
         sculptures.forEach((sculpture, index) => {
@@ -274,6 +354,7 @@ export function createBackgroundScene(options: BackgroundSceneOptions): Backgrou
           const scale = 10 + Math.sin(time * 3 + index) * 0.55;
           sprite.scale.set(scale, scale, 1);
         });
+        moonMaterial.opacity = 0.52 + Math.sin(time * 2.1) * 0.035;
 
         const positions = dustGeometry.attributes.position.array as Float32Array;
         for (let index = 0; index < particleCount; index += 1) {

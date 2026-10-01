@@ -163,4 +163,86 @@
   .animate-marquee-reverse {
     animation: marquee 60s linear infinite reverse;
   }
+
+  .cinematic-name-wrap {
+    will-change: transform, opacity;
+    transition: transform 180ms linear, opacity 180ms linear;
+  }
+
+  .cinematic-name {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    isolation: isolate;
+    line-height: 0.85;
+  }
+
+  .cinematic-name-line {
+    display: inline-flex;
+    justify-content: center;
+  }
+
+  .cinematic-letter {
+    display: inline-block;
+    opacity: 0;
+    filter: blur(8px);
+    letter-spacing: 0.12em;
+    transform: translate3d(0, 0.28em, 0);
+    animation: cinematicLetterReveal 1200ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .cinematic-letter-accent {
+    color: hsl(var(--foreground) / 0.26);
+  }
+
+  .cinematic-name-sweep {
+    position: absolute;
+    top: 4%;
+    bottom: 4%;
+    left: -14%;
+    width: 0.055em;
+    background: rgba(209, 229, 248, 0.58);
+    box-shadow: 0 0 22px rgba(132, 180, 222, 0.78);
+    opacity: 0;
+    mix-blend-mode: screen;
+    pointer-events: none;
+    animation: cinematicLightSweep 1350ms cubic-bezier(0.16, 1, 0.3, 1) 1000ms forwards;
+  }
+
+  @keyframes cinematicLetterReveal {
+    0% {
+      opacity: 0;
+      filter: blur(8px);
+      letter-spacing: 0.12em;
+      transform: translate3d(0, 0.28em, 0);
+    }
+    62% {
+      opacity: 1;
+      filter: blur(0);
+    }
+    100% {
+      opacity: 1;
+      filter: blur(0);
+      letter-spacing: 0;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes cinematicLightSweep {
+    0% {
+      opacity: 0;
+      transform: translateX(0) skewX(-10deg);
+    }
+    15% {
+      opacity: 0.45;
+    }
+    80% {
+      opacity: 0.26;
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(1550%) skewX(-10deg);
+    }
+  }
 }

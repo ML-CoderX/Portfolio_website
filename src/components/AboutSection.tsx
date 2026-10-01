@@ -8,7 +8,7 @@ const AboutSection = () => (
       <AnimatedAvatar />
       <div className="flex-1">
         <p className="body-text max-w-2xl">
-          I'm Saad Beary, a Computer Science student and developer passionate
+          I'm Saad AR, a Computer Science student and developer passionate
           about building practical technology solutions. I enjoy turning ideas
           into real products using modern web technologies and intelligent
           systems.
