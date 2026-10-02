@@ -12,40 +12,51 @@ export interface BackgroundSceneController {
   destroy: () => void;
 }
 
-type Waypoint = {
+type EnvironmentState = {
   position: THREE.Vector3;
   target: THREE.Vector3;
   fogColor: number;
-  accentColor: number;
+  fogDensity: number;
+  lightColor: number;
+  exposure: number;
+  particleOpacity: number;
 };
 
-const SECTION_WAYPOINTS: Waypoint[] = [
-  { position: new THREE.Vector3(0, 1, 22), target: new THREE.Vector3(0, 0, -5), fogColor: 0x030508, accentColor: 0x486b8d },
-  { position: new THREE.Vector3(-1.8, -6, 20), target: new THREE.Vector3(0, -6, -5), fogColor: 0x05070b, accentColor: 0x445e80 },
-  { position: new THREE.Vector3(2.3, -13, 21), target: new THREE.Vector3(0, -13, -5), fogColor: 0x05060a, accentColor: 0x6d4b5b },
-  { position: new THREE.Vector3(-2.2, -20, 22), target: new THREE.Vector3(0, -20, -6), fogColor: 0x070608, accentColor: 0x8d3d43 },
-  { position: new THREE.Vector3(1.6, -28, 20), target: new THREE.Vector3(0, -28, -5), fogColor: 0x04070a, accentColor: 0x3f7085 },
-  { position: new THREE.Vector3(-1.8, -35, 21), target: new THREE.Vector3(0, -35, -5), fogColor: 0x05070b, accentColor: 0x4c6689 },
-  { position: new THREE.Vector3(1.2, -42, 22), target: new THREE.Vector3(0, -42, -6), fogColor: 0x070608, accentColor: 0x92424a },
-  { position: new THREE.Vector3(0, -49, 23), target: new THREE.Vector3(0, -49, -6), fogColor: 0x020305, accentColor: 0x6b5560 },
+type LayerPlane = {
+  mesh: THREE.Mesh<THREE.PlaneGeometry, THREE.Material>;
+  basePosition: THREE.Vector3;
+  parallax: number;
+  drift: number;
+  phase: number;
+};
+
+const ENVIRONMENT_STATES: EnvironmentState[] = [
+  { position: new THREE.Vector3(0, 1.5, 25), target: new THREE.Vector3(0, 0.4, -13), fogColor: 0x050b12, fogDensity: 0.009, lightColor: 0xa9d1e6, exposure: 0.96, particleOpacity: 0.38 },
+  { position: new THREE.Vector3(-1.1, -6.5, 23), target: new THREE.Vector3(0, -6.2, -12), fogColor: 0x07101a, fogDensity: 0.012, lightColor: 0x92bed7, exposure: 0.92, particleOpacity: 0.44 },
+  { position: new THREE.Vector3(1.4, -14, 24), target: new THREE.Vector3(0, -14.2, -13), fogColor: 0x0a121b, fogDensity: 0.014, lightColor: 0xa2c0d1, exposure: 0.88, particleOpacity: 0.5 },
+  { position: new THREE.Vector3(-1.6, -22, 23), target: new THREE.Vector3(0, -22.4, -13), fogColor: 0x0a1119, fogDensity: 0.016, lightColor: 0x8faec4, exposure: 0.86, particleOpacity: 0.54 },
+  { position: new THREE.Vector3(1.2, -30, 24), target: new THREE.Vector3(0, -30.4, -13), fogColor: 0x06101a, fogDensity: 0.013, lightColor: 0x9ccfdb, exposure: 0.96, particleOpacity: 0.58 },
+  { position: new THREE.Vector3(-1.1, -38, 23), target: new THREE.Vector3(0, -38.4, -13), fogColor: 0x07101a, fogDensity: 0.012, lightColor: 0xa6c8dc, exposure: 0.92, particleOpacity: 0.48 },
+  { position: new THREE.Vector3(0.6, -46, 25), target: new THREE.Vector3(0, -46.4, -13), fogColor: 0x040a11, fogDensity: 0.01, lightColor: 0xb4d3e1, exposure: 0.9, particleOpacity: 0.36 },
 ];
+
+const ASSET_PATHS = {
+  mountain: "/cinematic/data-center-mountain.webp",
+} as const;
 
 function createGlowTexture() {
   const textureCanvas = document.createElement("canvas");
   textureCanvas.width = 128;
   textureCanvas.height = 128;
   const context = textureCanvas.getContext("2d");
-
   if (context) {
     const glow = context.createRadialGradient(64, 64, 0, 64, 64, 64);
-    glow.addColorStop(0, "rgba(255,255,255,0.82)");
-    glow.addColorStop(0.18, "rgba(207,224,244,0.36)");
-    glow.addColorStop(0.52, "rgba(125,158,190,0.08)");
-    glow.addColorStop(1, "rgba(0,0,0,0)");
+    glow.addColorStop(0, "rgba(231, 243, 255, 0.82)");
+    glow.addColorStop(0.2, "rgba(143, 187, 220, 0.2)");
+    glow.addColorStop(1, "rgba(0, 0, 0, 0)");
     context.fillStyle = glow;
     context.fillRect(0, 0, 128, 128);
   }
-
   const texture = new THREE.CanvasTexture(textureCanvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   return texture;
@@ -55,247 +66,161 @@ export function createBackgroundScene(options: BackgroundSceneOptions): Backgrou
   const { canvas, reducedMotion = false } = options;
   let width = canvas.clientWidth || window.innerWidth;
   let height = canvas.clientHeight || window.innerHeight;
-  const isMobile = Math.min(width, height) < 768;
-
+  let isMobile = Math.min(width, height) < 768;
+  const textureLoader = new THREE.TextureLoader();
   const scene = new THREE.Scene();
-  const fogColor = new THREE.Color(SECTION_WAYPOINTS[0].fogColor);
-  scene.background = fogColor.clone();
-  scene.fog = new THREE.FogExp2(fogColor, isMobile ? 0.032 : 0.024);
+  const currentFogColor = new THREE.Color(ENVIRONMENT_STATES[0].fogColor);
+  scene.background = currentFogColor.clone();
+  scene.fog = new THREE.FogExp2(currentFogColor, ENVIRONMENT_STATES[0].fogDensity);
 
-  const camera = new THREE.PerspectiveCamera(isMobile ? 52 : 46, width / height, 0.1, 90);
-  camera.position.copy(SECTION_WAYPOINTS[0].position);
-
-  const renderer = new THREE.WebGLRenderer({
-    canvas,
-    alpha: false,
-    antialias: !isMobile,
-    powerPreference: "high-performance",
-  });
+  const camera = new THREE.PerspectiveCamera(isMobile ? 55 : 47, width / height, 0.1, 100);
+  camera.position.copy(ENVIRONMENT_STATES[0].position);
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: false, antialias: !isMobile, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1 : 1.5));
   renderer.setSize(width, height, false);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.78;
+  renderer.toneMappingExposure = ENVIRONMENT_STATES[0].exposure;
 
-  scene.add(new THREE.HemisphereLight(0x657b96, 0x08090c, 1.6));
-
-  const moonlight = new THREE.DirectionalLight(0x89a9cd, 1.75);
-  moonlight.position.set(-8, 13, 16);
-  scene.add(moonlight);
-
-  const crimsonLight = new THREE.PointLight(0x9b353d, 7.2, 32, 2.1);
-  crimsonLight.position.set(8, -18, 3);
-  scene.add(crimsonLight);
-
-  const roamingLight = new THREE.PointLight(0x638fbc, 6.2, 34, 2);
-  roamingLight.position.set(-7, 2, 4);
-  scene.add(roamingLight);
+  const ambient = new THREE.HemisphereLight(0x9bc4dc, 0x071017, 2.2);
+  const keyLight = new THREE.DirectionalLight(0xc2e1f0, 4.4);
+  keyLight.position.set(-10, 15, 18);
+  const travelingLight = new THREE.PointLight(0x75bde2, 24, 55, 2);
+  travelingLight.position.set(-3, 2, 6);
+  scene.add(ambient, keyLight, travelingLight);
 
   const farLayer = new THREE.Group();
-  const midgroundLayer = new THREE.Group();
+  const distantLayer = new THREE.Group();
+  const midLayer = new THREE.Group();
   const foregroundLayer = new THREE.Group();
-  scene.add(farLayer, midgroundLayer, foregroundLayer);
-
-  const sharedSlateGeometry = new THREE.BoxGeometry(1, 1, 1);
-  const sharedStoneGeometry = new THREE.IcosahedronGeometry(1, 1);
-  const geometries: THREE.BufferGeometry[] = [sharedSlateGeometry, sharedStoneGeometry];
+  const closeLayer = new THREE.Group();
+  scene.add(farLayer, distantLayer, midLayer, foregroundLayer, closeLayer);
+  const groups = [farLayer, distantLayer, midLayer, foregroundLayer, closeLayer];
+  const planes: LayerPlane[] = [];
+  const geometries: THREE.BufferGeometry[] = [];
   const materials: THREE.Material[] = [];
+  const textures: THREE.Texture[] = [];
 
-  const makeStoneMaterial = (color: number) => {
-    const material = new THREE.MeshStandardMaterial({
-      color,
-      emissive: 0x050a11,
-      emissiveIntensity: 0.45,
-      roughness: 0.46,
-      metalness: 0.62,
-      flatShading: true,
+  const assetTextures = Object.fromEntries(
+    Object.entries(ASSET_PATHS).map(([name, path]) => {
+      const texture = textureLoader.load(path);
+      texture.colorSpace = THREE.SRGBColorSpace;
+      texture.minFilter = THREE.LinearFilter;
+      textures.push(texture);
+      return [name, texture];
+    }),
+  ) as Record<keyof typeof ASSET_PATHS, THREE.Texture>;
+
+  const addPlane = (layer: THREE.Group, texture: THREE.Texture, position: THREE.Vector3, scale: [number, number], opacity: number, parallax: number, drift = 0, flip = false) => {
+    const geometry = new THREE.PlaneGeometry(scale[0], scale[1]);
+    const material = new THREE.MeshBasicMaterial({
+      map: texture,
+      transparent: true,
+      opacity,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      color: 0x9ec7dc,
     });
-    materials.push(material);
-    return material;
-  };
-
-  const obeliskMaterial = makeStoneMaterial(0x2a3d52);
-  const darkerStoneMaterial = makeStoneMaterial(0x172231);
-  const facetedMaterial = makeStoneMaterial(0x3a536b);
-  const ridgeMaterial = new THREE.MeshBasicMaterial({
-    color: 0x1a2d40,
-    transparent: true,
-    opacity: 0.86,
-    depthWrite: false,
-  });
-  const branchMaterial = new THREE.LineBasicMaterial({
-    color: 0x1a2b3b,
-    transparent: true,
-    opacity: 0.42,
-    depthWrite: false,
-  });
-  materials.push(ridgeMaterial, branchMaterial);
-
-  const createRidge = (y: number, z: number, scale: number, opacity: number) => {
-    const shape = new THREE.Shape();
-    shape.moveTo(-22, -5);
-    shape.lineTo(-22, -0.8);
-    shape.lineTo(-15, 1.7);
-    shape.lineTo(-10, -0.2);
-    shape.lineTo(-4, 3.2);
-    shape.lineTo(2, 0.8);
-    shape.lineTo(8, 2.6);
-    shape.lineTo(15, -0.1);
-    shape.lineTo(22, 1.4);
-    shape.lineTo(22, -5);
-    shape.closePath();
-    const geometry = new THREE.ShapeGeometry(shape);
-    geometry.scale(scale, scale, 1);
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.position.copy(position);
+    mesh.scale.x = flip ? -1 : 1;
+    layer.add(mesh);
     geometries.push(geometry);
-    const material = ridgeMaterial.clone();
-    material.opacity = opacity;
     materials.push(material);
-    const ridge = new THREE.Mesh(geometry, material);
-    ridge.position.set(0, y, z);
-    farLayer.add(ridge);
+    planes.push({ mesh, basePosition: position.clone(), parallax, drift, phase: Math.random() * Math.PI * 2 });
   };
 
-  [-1, -13, -25, -37, -49].forEach((y, index) => {
-    createRidge(y, -22, 1.06, 0.44);
-    createRidge(y - 1.4, -15, 0.9, 0.62 - index * 0.025);
+  const sceneBands = [1, -7, -15, -23, -31, -39, -47];
+  sceneBands.forEach((y, index) => {
+    const offset = index % 2 === 0 ? 1 : -1;
+    addPlane(farLayer, assetTextures.mountain, new THREE.Vector3(offset * 1.4, y + 1.6, -31), [48, 23], 0.58, 0.05);
   });
 
-  const createBranch = (x: number, y: number, direction: number) => {
-    const points = [
-      new THREE.Vector3(x, y - 6, -4),
-      new THREE.Vector3(x + direction * 1.1, y - 1.5, -3),
-      new THREE.Vector3(x + direction * 3.6, y + 0.8, -3.2),
-      new THREE.Vector3(x + direction * 5.8, y + 3.8, -4),
-      new THREE.Vector3(x + direction * 3.6, y + 0.8, -3.2),
-      new THREE.Vector3(x + direction * 5.7, y + 0.3, -3.6),
-    ];
-    const geometry = new THREE.BufferGeometry().setFromPoints(points);
-    geometries.push(geometry);
-    foregroundLayer.add(new THREE.Line(geometry, branchMaterial));
-  };
+  const monolithGeometry = new THREE.BoxGeometry(1, 1, 1);
+  const monolithMaterial = new THREE.MeshStandardMaterial({ color: 0x1f4157, emissive: 0x071722, emissiveIntensity: 0.7, roughness: 0.48, metalness: 0.76, transparent: true, opacity: 0.82 });
+  const edgeMaterial = new THREE.LineBasicMaterial({ color: 0x8ec7e8, transparent: true, opacity: 0.38, depthWrite: false });
+  const moduleMaterial = new THREE.MeshBasicMaterial({ color: 0x4ea6d4, transparent: true, opacity: 0.42, depthWrite: false });
+  geometries.push(monolithGeometry);
+  materials.push(monolithMaterial, edgeMaterial, moduleMaterial);
+  sceneBands.forEach((y, index) => {
+    [-10, -6.5, 7.5, 11].forEach((x, monolithIndex) => {
+      const height = 3.5 + ((index + monolithIndex) % 3) * 1.8;
+      const monolith = new THREE.Mesh(monolithGeometry, monolithMaterial);
+      monolith.position.set(x, y - 1.5 + height / 2, -14 - (monolithIndex % 2) * 2);
+      monolith.scale.set(1.8, height, 1.4);
+      midLayer.add(monolith);
+      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(monolithGeometry), edgeMaterial);
+      edges.position.copy(monolith.position);
+      edges.scale.copy(monolith.scale);
+      midLayer.add(edges);
+      geometries.push(edges.geometry);
 
-  createBranch(-13, 2, 1);
-  createBranch(13, -16, -1);
-  createBranch(-13, -30, 1);
-  createBranch(13, -44, -1);
-
-  const obelisks: THREE.Mesh[] = [];
-  const makeObelisk = (x: number, y: number, z: number, scale: THREE.Vector3, tilt: number) => {
-    const obelisk = new THREE.Mesh(sharedSlateGeometry, obeliskMaterial);
-    obelisk.position.set(x, y, z);
-    obelisk.scale.copy(scale);
-    obelisk.rotation.set(tilt, tilt * 0.28, tilt * -0.16);
-    midgroundLayer.add(obelisk);
-    obelisks.push(obelisk);
-  };
-
-  makeObelisk(-10.5, -1, -13, new THREE.Vector3(2.4, 12, 1.2), -0.08);
-  makeObelisk(10.8, -8, -17, new THREE.Vector3(1.8, 16, 1), 0.06);
-  makeObelisk(-11.5, -21, -15, new THREE.Vector3(2.2, 13, 1.1), 0.1);
-  makeObelisk(10.5, -34, -17, new THREE.Vector3(2.6, 15, 1.15), -0.07);
-  makeObelisk(-8.5, -46, -14, new THREE.Vector3(1.8, 12, 1), 0.05);
-
-  const slabs: THREE.Mesh[] = [];
-  const slabPositions = [
-    new THREE.Vector3(5.5, 1.5, -9),
-    new THREE.Vector3(-5.5, -14, -8),
-    new THREE.Vector3(5.8, -28, -9),
-    new THREE.Vector3(-5.8, -42, -8),
-  ];
-  slabPositions.forEach((position, index) => {
-    const slab = new THREE.Mesh(sharedSlateGeometry, darkerStoneMaterial);
-    slab.position.copy(position);
-    slab.scale.set(5.4, 0.36, 3.4);
-    slab.rotation.set(index % 2 ? -0.16 : 0.12, index * 0.35, index % 2 ? -0.08 : 0.08);
-    midgroundLayer.add(slab);
-    slabs.push(slab);
+      for (let row = 0; row < 4; row += 1) {
+        const module = new THREE.Mesh(monolithGeometry, moduleMaterial);
+        module.position.set(x, y - 0.3 + row * 1.15, -12.55 - (monolithIndex % 2) * 2);
+        module.scale.set(1.2, 0.16, 0.04);
+        midLayer.add(module);
+      }
+    });
   });
 
-  const sculptures: THREE.Mesh[] = [];
-  [
-    { position: new THREE.Vector3(7.2, 2.4, -10), scale: 3.6 },
-    { position: new THREE.Vector3(-7.5, -12, -11), scale: 3.1 },
-    { position: new THREE.Vector3(7.8, -25, -10), scale: 3.9 },
-    { position: new THREE.Vector3(-7, -39, -11), scale: 3.3 },
-  ].forEach(({ position, scale }, index) => {
-    const sculpture = new THREE.Mesh(sharedStoneGeometry, facetedMaterial);
-    sculpture.position.copy(position);
-    sculpture.scale.setScalar(scale);
-    sculpture.rotation.set(index * 0.35, index * 0.72, index * -0.16);
-    midgroundLayer.add(sculpture);
-    sculptures.push(sculpture);
+  const foregroundGeometry = new THREE.CylinderGeometry(0.07, 0.16, 13, 8);
+  const foregroundMaterial = new THREE.MeshStandardMaterial({ color: 0x376b88, emissive: 0x0e2b3d, emissiveIntensity: 1.1, roughness: 0.36, metalness: 0.7, transparent: true, opacity: 0.72 });
+  geometries.push(foregroundGeometry);
+  materials.push(foregroundMaterial);
+  sceneBands.forEach((y, index) => {
+    [-15, 15].forEach((x, pillarIndex) => {
+      const pillar = new THREE.Mesh(foregroundGeometry, foregroundMaterial);
+      pillar.position.set(x, y - 1.5, -3 + pillarIndex * 0.6);
+      pillar.rotation.z = pillarIndex ? -0.16 : 0.16;
+      closeLayer.add(pillar);
+    });
   });
 
   const glowTexture = createGlowTexture();
+  textures.push(glowTexture);
   const glowSprites: THREE.Sprite[] = [];
-  const glowColors = [0x5f87ad, 0x8e3d44, 0x516f91, 0x8a3b42, 0x526e8c];
-  glowColors.forEach((color, index) => {
-    const material = new THREE.SpriteMaterial({
-      map: glowTexture,
-      color,
-      transparent: true,
-      opacity: isMobile ? 0.18 : 0.28,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false,
-    });
-    materials.push(material);
+  sceneBands.forEach((y, index) => {
+    const material = new THREE.SpriteMaterial({ map: glowTexture, color: index % 2 ? 0x78a6c5 : 0xc4d9e6, transparent: true, opacity: 0.2, depthWrite: false, blending: THREE.AdditiveBlending });
     const sprite = new THREE.Sprite(material);
-    sprite.position.set(index % 2 ? -5.5 : 5.5, -index * 11 - 1, -8);
-    sprite.scale.set(10, 10, 1);
-    farLayer.add(sprite);
+    sprite.position.set(index % 2 ? 7 : -7, y + 2, -12);
+    sprite.scale.set(11, 11, 1);
+    distantLayer.add(sprite);
     glowSprites.push(sprite);
+    materials.push(material);
   });
 
-  const moonMaterial = new THREE.SpriteMaterial({
-    map: glowTexture,
-    color: 0xc0d3e5,
-    transparent: true,
-    opacity: 0.58,
-    depthWrite: false,
-  });
-  materials.push(moonMaterial);
-  const moon = new THREE.Sprite(moonMaterial);
-  moon.position.set(-7.8, 5.2, -10);
-  moon.scale.set(6, 6, 1);
-  farLayer.add(moon);
-
-  const particleCount = isMobile ? 46 : 96;
-  const dustPositions = new Float32Array(particleCount * 3);
-  const dustOrigins = new Float32Array(particleCount * 3);
-  const dustOffsets = new Float32Array(particleCount);
+  const particleCount = isMobile ? 70 : 170;
+  const particlePositions = new Float32Array(particleCount * 3);
+  const particleOrigins = new Float32Array(particleCount * 3);
+  const particlePhases = new Float32Array(particleCount);
   for (let index = 0; index < particleCount; index += 1) {
-    const offset = index * 3;
-    dustOrigins[offset] = (Math.random() - 0.5) * 30;
-    dustOrigins[offset + 1] = 5 - Math.random() * 58;
-    dustOrigins[offset + 2] = -3 - Math.random() * 24;
-    dustPositions[offset] = dustOrigins[offset];
-    dustPositions[offset + 1] = dustOrigins[offset + 1];
-    dustPositions[offset + 2] = dustOrigins[offset + 2];
-    dustOffsets[index] = Math.random() * Math.PI * 2;
+    const pointer = index * 3;
+    particleOrigins[pointer] = (Math.random() - 0.5) * 38;
+    particleOrigins[pointer + 1] = 7 - Math.random() * 62;
+    particleOrigins[pointer + 2] = -4 - Math.random() * 24;
+    particlePositions[pointer] = particleOrigins[pointer];
+    particlePositions[pointer + 1] = particleOrigins[pointer + 1];
+    particlePositions[pointer + 2] = particleOrigins[pointer + 2];
+    particlePhases[index] = Math.random() * Math.PI * 2;
   }
+  const particleGeometry = new THREE.BufferGeometry();
+  particleGeometry.setAttribute("position", new THREE.BufferAttribute(particlePositions, 3));
+  const particleMaterial = new THREE.PointsMaterial({ color: 0xc2d7e7, size: isMobile ? 0.12 : 0.095, transparent: true, opacity: ENVIRONMENT_STATES[0].particleOpacity, depthWrite: false, sizeAttenuation: true });
+  scene.add(new THREE.Points(particleGeometry, particleMaterial));
+  geometries.push(particleGeometry);
+  materials.push(particleMaterial);
 
-  const dustGeometry = new THREE.BufferGeometry();
-  dustGeometry.setAttribute("position", new THREE.BufferAttribute(dustPositions, 3));
-  geometries.push(dustGeometry);
-  const dustMaterial = new THREE.PointsMaterial({
-    color: 0xa9bed3,
-    size: isMobile ? 0.14 : 0.1,
-    transparent: true,
-    opacity: 0.34,
-    depthWrite: false,
-    sizeAttenuation: true,
-  });
-  materials.push(dustMaterial);
-  foregroundLayer.add(new THREE.Points(dustGeometry, dustMaterial));
-
-  const targetCameraPosition = SECTION_WAYPOINTS[0].position.clone();
-  const targetLookAt = SECTION_WAYPOINTS[0].target.clone();
-  const currentLookAt = SECTION_WAYPOINTS[0].target.clone();
-  const targetFogColor = new THREE.Color(SECTION_WAYPOINTS[0].fogColor);
-  const targetAccentColor = new THREE.Color(SECTION_WAYPOINTS[0].accentColor);
+  const targetCameraPosition = ENVIRONMENT_STATES[0].position.clone();
+  const targetLookAt = ENVIRONMENT_STATES[0].target.clone();
+  const currentLookAt = ENVIRONMENT_STATES[0].target.clone();
+  const targetFogColor = new THREE.Color(ENVIRONMENT_STATES[0].fogColor);
+  const targetLightColor = new THREE.Color(ENVIRONMENT_STATES[0].lightColor);
+  let targetFogDensity = ENVIRONMENT_STATES[0].fogDensity;
+  let targetExposure = ENVIRONMENT_STATES[0].exposure;
+  let targetParticleOpacity = ENVIRONMENT_STATES[0].particleOpacity;
   const cameraTarget = new THREE.Vector3();
   const lookTarget = new THREE.Vector3();
-
   let pointerX = 0;
   let pointerY = 0;
   let targetPointerX = 0;
@@ -307,70 +232,54 @@ export function createBackgroundScene(options: BackgroundSceneOptions): Backgrou
 
   const render = (now: number) => {
     if (destroyed) return;
-
     const delta = Math.min((now - lastFrame) / 1000, 0.05);
     lastFrame = now;
-
     if (!paused) {
-      pointerX += (targetPointerX - pointerX) * Math.min(delta * 2, 0.06);
-      pointerY += (targetPointerY - pointerY) * Math.min(delta * 2, 0.06);
-
+      pointerX += (targetPointerX - pointerX) * Math.min(delta * 2.2, 0.07);
+      pointerY += (targetPointerY - pointerY) * Math.min(delta * 2.2, 0.07);
       cameraTarget.copy(targetCameraPosition);
       lookTarget.copy(targetLookAt);
       if (!reducedMotion) {
-        cameraTarget.x += pointerX * 0.55;
-        cameraTarget.y += pointerY * 0.28;
-        lookTarget.x += pointerX * 0.22;
-        lookTarget.y += pointerY * 0.12;
+        cameraTarget.x += pointerX * 0.5;
+        cameraTarget.y += pointerY * 0.22;
+        lookTarget.x += pointerX * 0.2;
+        lookTarget.y += pointerY * 0.1;
       }
-
-      const cameraEase = reducedMotion ? 0.12 : Math.min(delta * 1.7, 0.08);
-      camera.position.lerp(cameraTarget, cameraEase);
-      currentLookAt.lerp(lookTarget, cameraEase);
+      const ease = reducedMotion ? 0.12 : Math.min(delta * 1.7, 0.08);
+      camera.position.lerp(cameraTarget, ease);
+      currentLookAt.lerp(lookTarget, ease);
       camera.lookAt(currentLookAt);
-
-      fogColor.lerp(targetFogColor, Math.min(delta * 1.2, 0.05));
-      (scene.fog as THREE.FogExp2).color.copy(fogColor);
-      scene.background = fogColor;
-      roamingLight.color.lerp(targetAccentColor, Math.min(delta * 1.2, 0.05));
-
-      farLayer.position.set(pointerX * 0.12, pointerY * 0.04, 0);
-      midgroundLayer.position.set(pointerX * 0.3, pointerY * 0.1, 0);
-      foregroundLayer.position.set(pointerX * 0.58, pointerY * 0.2, 0);
-
+      currentFogColor.lerp(targetFogColor, Math.min(delta * 1.2, 0.06));
+      (scene.fog as THREE.FogExp2).color.copy(currentFogColor);
+      (scene.fog as THREE.FogExp2).density += (targetFogDensity - (scene.fog as THREE.FogExp2).density) * Math.min(delta * 1.2, 0.06);
+      scene.background = currentFogColor;
+      travelingLight.color.lerp(targetLightColor, Math.min(delta * 1.2, 0.06));
+      renderer.toneMappingExposure += (targetExposure - renderer.toneMappingExposure) * Math.min(delta * 1.2, 0.06);
+      particleMaterial.opacity += (targetParticleOpacity - particleMaterial.opacity) * Math.min(delta * 1.2, 0.06);
+      groups.forEach((group, index) => group.position.set(pointerX * [0.12, 0.24, 0.42, 0.68, 0.9][index], pointerY * [0.04, 0.08, 0.14, 0.22, 0.3][index], 0));
       if (!reducedMotion) {
         const time = now * 0.0001;
-        sculptures.forEach((sculpture, index) => {
-          sculpture.rotation.y += delta * (0.018 + index * 0.003);
-          sculpture.rotation.x += delta * 0.006;
-        });
-        slabs.forEach((slab, index) => {
-          slab.rotation.y += delta * (index % 2 ? -0.006 : 0.006);
-        });
-        obelisks.forEach((obelisk, index) => {
-          obelisk.rotation.z += Math.sin(time + index) * delta * 0.002;
+        planes.forEach((plane) => {
+          plane.mesh.position.x = plane.basePosition.x + pointerX * plane.parallax * 0.55;
+          plane.mesh.position.y = plane.basePosition.y + Math.sin(time * 8 + plane.phase) * plane.drift;
         });
         glowSprites.forEach((sprite, index) => {
-          const scale = 10 + Math.sin(time * 3 + index) * 0.55;
+          const scale = 11 + Math.sin(time * 7 + index) * 0.5;
           sprite.scale.set(scale, scale, 1);
         });
-        moonMaterial.opacity = 0.52 + Math.sin(time * 2.1) * 0.035;
-
-        const positions = dustGeometry.attributes.position.array as Float32Array;
+        const positions = particleGeometry.attributes.position.array as Float32Array;
         for (let index = 0; index < particleCount; index += 1) {
-          const offset = index * 3;
-          const phase = time * (2.2 + (index % 4) * 0.12) + dustOffsets[index];
-          positions[offset] = dustOrigins[offset] + Math.sin(phase) * 0.36;
-          positions[offset + 1] = dustOrigins[offset + 1] + Math.cos(phase * 0.72) * 0.42;
+          const pointer = index * 3;
+          const phase = time * (10 + (index % 5)) + particlePhases[index];
+          positions[pointer] = particleOrigins[pointer] + Math.sin(phase) * 0.34 + pointerX * 0.12;
+          positions[pointer + 1] = particleOrigins[pointer + 1] + Math.cos(phase * 0.72) * 0.38 + pointerY * 0.08;
         }
-        dustGeometry.attributes.position.needsUpdate = true;
+        particleGeometry.attributes.position.needsUpdate = true;
+        travelingLight.position.x = -3 + Math.sin(time * 1.8) * 1.4;
+        travelingLight.intensity = 10 + Math.sin(time * 4) * 0.5;
       }
-
-      crimsonLight.intensity = 6.5 + Math.sin(now * 0.00035) * 0.55;
-      roamingLight.position.x = -7 + Math.sin(now * 0.00016) * 1.2;
       renderer.render(scene, camera);
     }
-
     animationFrame = requestAnimationFrame(render);
   };
 
@@ -382,26 +291,21 @@ export function createBackgroundScene(options: BackgroundSceneOptions): Backgrou
   animationFrame = requestAnimationFrame(render);
 
   return {
-    updateScroll: (scrollProgress: number) => {
-      const waypointProgress = Math.max(0, Math.min(1, scrollProgress)) * (SECTION_WAYPOINTS.length - 1);
-      const baseIndex = Math.floor(waypointProgress);
-      const nextIndex = Math.min(baseIndex + 1, SECTION_WAYPOINTS.length - 1);
-      const fraction = waypointProgress - baseIndex;
-      const currentWaypoint = SECTION_WAYPOINTS[baseIndex];
-      const nextWaypoint = SECTION_WAYPOINTS[nextIndex];
-
-      targetCameraPosition.lerpVectors(currentWaypoint.position, nextWaypoint.position, fraction);
-      targetLookAt.lerpVectors(currentWaypoint.target, nextWaypoint.target, fraction);
-      targetFogColor.lerpColors(
-        new THREE.Color(currentWaypoint.fogColor),
-        new THREE.Color(nextWaypoint.fogColor),
-        fraction
-      );
-      targetAccentColor.lerpColors(
-        new THREE.Color(currentWaypoint.accentColor),
-        new THREE.Color(nextWaypoint.accentColor),
-        fraction
-      );
+    updateScroll: (scrollProgress: number, activeSectionIndex: number) => {
+      const normalized = Math.max(0, Math.min(1, scrollProgress));
+      const scaled = normalized * (ENVIRONMENT_STATES.length - 1);
+      const baseIndex = Math.min(Math.floor(scaled), ENVIRONMENT_STATES.length - 1);
+      const nextIndex = Math.min(baseIndex + 1, ENVIRONMENT_STATES.length - 1);
+      const blend = scaled - baseIndex;
+      const current = ENVIRONMENT_STATES[baseIndex];
+      const next = ENVIRONMENT_STATES[nextIndex];
+      targetCameraPosition.lerpVectors(current.position, next.position, blend);
+      targetLookAt.lerpVectors(current.target, next.target, blend);
+      targetFogColor.lerpColors(new THREE.Color(current.fogColor), new THREE.Color(next.fogColor), blend);
+      targetLightColor.lerpColors(new THREE.Color(current.lightColor), new THREE.Color(next.lightColor), blend);
+      targetFogDensity = THREE.MathUtils.lerp(current.fogDensity, next.fogDensity, blend);
+      targetExposure = THREE.MathUtils.lerp(current.exposure, next.exposure, blend);
+      targetParticleOpacity = THREE.MathUtils.lerp(current.particleOpacity, next.particleOpacity, blend) + Math.min(activeSectionIndex, 6) * 0.002;
     },
     updatePointer: (x: number, y: number) => {
       targetPointerX = x;
@@ -410,9 +314,11 @@ export function createBackgroundScene(options: BackgroundSceneOptions): Backgrou
     resize: (newWidth: number, newHeight: number) => {
       width = newWidth;
       height = newHeight;
+      isMobile = Math.min(width, height) < 768;
       camera.aspect = width / height;
+      camera.fov = isMobile ? 55 : 47;
       camera.updateProjectionMatrix();
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, Math.min(width, height) < 768 ? 1 : 1.5));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, isMobile ? 1 : 1.5));
       renderer.setSize(width, height, false);
     },
     destroy: () => {
@@ -421,7 +327,7 @@ export function createBackgroundScene(options: BackgroundSceneOptions): Backgrou
       document.removeEventListener("visibilitychange", handleVisibility);
       geometries.forEach((geometry) => geometry.dispose());
       materials.forEach((material) => material.dispose());
-      glowTexture.dispose();
+      textures.forEach((texture) => texture.dispose());
       renderer.dispose();
     },
   };
