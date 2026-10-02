@@ -169,6 +169,18 @@
     transition: transform 180ms linear, opacity 180ms linear;
   }
 
+  .cinematic-fallback {
+    background:
+      radial-gradient(ellipse at 72% 28%, rgba(110, 152, 181, 0.17), transparent 36%),
+      radial-gradient(ellipse at 22% 72%, rgba(78, 116, 142, 0.12), transparent 42%),
+      linear-gradient(160deg, #07101a 0%, #03070d 48%, #010307 100%);
+  }
+
+  .cinematic-vignette {
+    background: radial-gradient(ellipse at center, transparent 32%, rgba(0, 0, 0, 0.28) 100%);
+    mix-blend-mode: multiply;
+  }
+
   .cinematic-name {
     position: relative;
     display: inline-flex;

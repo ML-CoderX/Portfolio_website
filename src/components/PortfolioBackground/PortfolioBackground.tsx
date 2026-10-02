@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createBackgroundScene, BackgroundSceneController } from "./backgroundScene";
 
 export function PortfolioBackground() {
@@ -95,6 +95,7 @@ export function PortfolioBackground() {
     };
 
     window.addEventListener("resize", handleResize, { passive: true });
+    window.addEventListener("orientationchange", handleResize, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -102,6 +103,7 @@ export function PortfolioBackground() {
         window.removeEventListener("mousemove", handleMouseMove);
       }
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
 
       if (controllerRef.current) {
         controllerRef.current.destroy();
@@ -121,9 +123,10 @@ export function PortfolioBackground() {
           className="absolute inset-0 w-full h-full block"
         />
       ) : (
-        <div className="absolute inset-0 w-full h-full bg-[#030508]" />
+        <div className="cinematic-fallback absolute inset-0 w-full h-full" />
       )}
 
+      <div className="cinematic-vignette absolute inset-0 pointer-events-none" />
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.035] mix-blend-overlay"
         style={{
