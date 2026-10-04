@@ -1,4 +1,4 @@
-import { KageLandingPage } from "@designcodeio/threeui";
+import { KageLandingPage } from "@designcodeio/threeui/components/KageLandingPage";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 
