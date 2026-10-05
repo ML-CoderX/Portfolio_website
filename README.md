@@ -31,4 +31,6 @@ Deploy the generated `dist` directory. The project uses npm and `package-lock.js
 - `public/landing-pages/kage.html` — required by the `/kage` reference component.
 - `assets/cinematic-source` — original supplied artwork, preserved for future edits and excluded from Vite's public build assets.
 
-The original résumé PDF is preserved in the project root. The homepage supports reduced motion and a manual motion toggle.
+The original résumé PDF is preserved in the project root. Its public copy at `public/Saad_Resume.pdf` is linked in the desktop and mobile navigation menus for viewing without authentication. Replace both copies when updating the résumé.
+
+The opening screen displays Saad AR while the page loads, with a short minimum introduction and a 4.5-second maximum wait, followed by a 450ms fade. It supports skipping and reduced motion. The homepage also supports a manual motion toggle.

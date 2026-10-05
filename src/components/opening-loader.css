@@ -1,0 +1,18 @@
+.opening-loader{position:fixed;inset:0;z-index:100;background:#080d13;color:#ecece5;display:grid;place-items:center;overflow:hidden;transition:opacity .45s ease,visibility .45s;font-family:Inter,Arial,sans-serif}
+.opening-loader.is-leaving{opacity:0;visibility:hidden;pointer-events:none}
+.opening-content{position:relative;text-align:center;padding:24px;width:min(90%,650px)}
+.opening-kicker{font-size:9px;letter-spacing:.3em;color:#9ca8b2;animation:opening-rise .8s both}
+.opening-name{font-size:clamp(58px,13vw,135px);letter-spacing:-.055em;line-height:1.2;margin:24px 0 32px;font-weight:500;animation:opening-rise 1s .1s both}
+.opening-name em{font-family:Georgia,serif;color:#c78165;font-weight:400}
+.opening-track{height:1px;background:#c7816530;max-width:220px;margin:auto;overflow:hidden}
+.opening-track span{display:block;width:45%;height:100%;background:#c78165;animation:opening-scan 1.4s ease-in-out infinite}
+.opening-caption{font-size:10px;letter-spacing:.15em;color:#9ca8b2;margin-top:20px}
+.opening-orbit{position:absolute;width:min(80vw,560px);aspect-ratio:1;border:1px solid #c7816515;border-radius:50%;box-shadow:0 0 0 55px #c7816505;animation:opening-breathe 3s ease-in-out infinite}
+.opening-orbit:after{content:"";position:absolute;width:5px;height:5px;border-radius:50%;background:#c78165;left:50%;top:-3px;box-shadow:0 0 20px #c78165}
+.opening-skip{position:absolute;bottom:34px;right:6%;padding:12px;font-size:11px;color:#b8c1c7;background:transparent;border:1px solid #c7816530;cursor:pointer}
+.opening-skip:hover{color:#fff;border-color:#c78165}.opening-skip:focus-visible{outline:2px solid #c78165;outline-offset:5px}
+.opening-edition{position:absolute;bottom:48px;left:6%;font-size:8px;letter-spacing:.18em;color:#9ca8b2}
+@keyframes opening-rise{from{opacity:0;transform:translateY(18px);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
+@keyframes opening-scan{from{transform:translateX(-110%)}to{transform:translateX(330%)}}
+@keyframes opening-breathe{50%{transform:scale(1.06);opacity:.5}}
+@media(prefers-reduced-motion:reduce){.opening-loader,.opening-loader *{animation:none!important;transition:none!important}.opening-track span{width:100%}}
