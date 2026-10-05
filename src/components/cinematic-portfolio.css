@@ -13,3 +13,6 @@
 
 
 .hero-actions{display:flex;align-items:center;flex-wrap:wrap;gap:16px 26px}
+
+/* Keep pre-rendered content readable before JavaScript starts. */
+html:not(.portfolio-interactive) .reveal{opacity:1;transform:none;filter:none}

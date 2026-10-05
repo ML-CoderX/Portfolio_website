@@ -1,5 +1,5 @@
 import { useEffect, useRef, type MutableRefObject } from "react";
-import * as THREE from "three";
+import type * as THREE from "three";
 
 type Props = { progress: MutableRefObject<number>; pointer: MutableRefObject<{x:number;y:number}>; paused: boolean };
 
@@ -9,6 +9,11 @@ export function CinematicWorld({ progress, pointer, paused }: Props) {
   const pausedRef = useRef(paused);
   useEffect(() => { pausedRef.current = paused; }, [paused]);
   useEffect(() => {
+    let cancelled = false;
+    let dispose = () => {};
+    // Decorative WebGL is separate from the content needed for the first render.
+    void import("three").then(THREE => {
+    if (cancelled) return;
     const canvas = canvasRef.current!;
     let renderer: THREE.WebGLRenderer;
     try { renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: "low-power" }); }
@@ -70,7 +75,9 @@ export function CinematicWorld({ progress, pointer, paused }: Props) {
     frame=requestAnimationFrame(draw);
     const lost=(e:Event)=>{e.preventDefault();cancelAnimationFrame(frame);canvas.style.opacity="0";};
     canvas.addEventListener("webglcontextlost",lost);
-    return()=>{cancelAnimationFrame(frame);window.removeEventListener("resize",resize);canvas.removeEventListener("webglcontextlost",lost);geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());renderer.dispose();};
+    dispose=()=>{cancelAnimationFrame(frame);window.removeEventListener("resize",resize);canvas.removeEventListener("webglcontextlost",lost);geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());renderer.dispose();};
+    }).catch(() => { dispose(); }); // The static background remains usable if WebGL cannot load.
+    return () => { cancelled = true; dispose(); };
   },[progress,pointer]);
   return <canvas ref={canvasRef} className="world-canvas"/>;
 }
