@@ -6,7 +6,7 @@ export default function RouteMetadata() {
   const { pathname } = useLocation();
   useEffect(() => {
     const home = pathname === "/";
-    document.title = home ? "Saad AR — AI, Web & Mobile Developer" : pathname === "/kage" ? "Design reference — Saad AR" : "Page not found — Saad AR";
+    document.title = home ? "Saadar | AI, Web & Mobile Developer Portfolio" : pathname === "/kage" ? "Design reference — Saad AR" : "Page not found — Saad AR";
     document.querySelector('meta[name="robots"]')?.setAttribute("content", home ? "index, follow, max-image-preview:large" : "noindex, follow");
     if (home) {
       let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');

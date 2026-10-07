@@ -28,7 +28,7 @@ Deploy the generated `dist` directory. The project uses npm and `package-lock.js
 - `src/components/cinematic-portfolio.css` — responsive layout and motion.
 - `src/pages` — homepage, retained `/kage` reference page, and 404 page.
 - `public/cinematic/optimized` — production scene images.
-- `public/images` and `public/logo.png` — portrait, texture, and logo.
+- `public/images` and `public/saadar-developer-logo.png` — portrait, texture, and logo.
 - `public/landing-pages/kage.html` — required by the `/kage` reference component.
 - `assets/cinematic-source` — original supplied artwork, preserved for future edits and excluded from Vite's public build assets.
 
