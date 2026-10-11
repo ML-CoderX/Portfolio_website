@@ -11,14 +11,50 @@ for (const content of ["Cashlio", "DocuAI", "IPL Win Predictor", "Laptop Price P
 }
 assert.ok(!html.includes('class="opening-loader'), "Static content must not be blocked by an introduction");
 assert.ok(!html.includes("<!-- seo:head -->"));
-const schema = JSON.parse(html.match(/<script id="profile-schema" type="application\/ld\+json">(.*?)<\/script>/s)[1]);
-assert.equal(schema.mainEntity.name, "Saad AR");
-assert.equal(schema.url, "https://saadar.dev/");
-assert.match(html, /property="og:image" content="https:\/\/saadar\.dev\//);
+const head = html.match(/<head>(.*?)<\/head>/s)[1];
+const schema = JSON.parse(head.match(/<script id="profile-schema" type="application\/ld\+json">(.*?)<\/script>/s)[1]);
+assert.deepEqual(schema, {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Saad AR",
+  alternateName: ["Saadar", "ML-CoderX"],
+  url: "https://saadar.dev/",
+  image: "https://saadar.dev/images/saadar-saad-ar-portrait.png",
+  jobTitle: "Machine Learning & Full-Stack Developer",
+  alumniOf: "Anjuman Institute of Technology and Management",
+  sameAs: ["https://github.com/ML-CoderX", "https://www.linkedin.com/in/saadar"],
+});
+const meta = (key) => {
+  const tags = [...head.matchAll(/<meta\s+[^>]*>/g)].map(([tag]) => tag)
+    .filter((tag) => tag.includes(`name="${key}"`) || tag.includes(`property="${key}"`));
+  assert.equal(tags.length, 1, `Expected one ${key} tag`);
+  return tags[0].match(/content="([^"]*)"/)[1];
+};
+const title = "Saad AR | AI, Web & Mobile Developer";
+assert.equal(head.match(/<title>(.*?)<\/title>/s)[1], title);
+for (const key of ["og:title", "twitter:title"]) assert.equal(meta(key), title);
+for (const key of ["description", "og:description", "twitter:description"]) {
+  const description = meta(key);
+  assert.ok(description.length < 160);
+  assert.match(description.split(".")[0], /Saad AR.*Computer Science student and developer/);
+}
+for (const key of ["og:image", "twitter:image"]) assert.equal(meta(key), schema.image);
+for (const key of ["og:image:alt", "twitter:image:alt"]) assert.equal(meta(key), "Portrait of Saad AR, developer");
+assert.equal(meta("og:image:width"), "1254");
+assert.equal(meta("og:image:height"), "1254");
+assert.equal(meta("twitter:card"), "summary_large_image");
+assert.equal(meta("og:site_name"), "Saad AR Portfolio");
+const contact = html.match(/<section id="contact".*?<\/section>/s)[0];
+for (const url of schema.sameAs) {
+  assert.ok(contact.includes(`href="${url}" target="_blank" rel="me noreferrer"`));
+}
+assert.ok(html.includes('alt="Portrait of Saad AR (developer)"'));
 const sitemap = await readFile("dist/sitemap.xml", "utf8");
 assert.match(sitemap, /<loc>https:\/\/saadar\.dev\/<\/loc>/);
 assert.ok(!sitemap.includes("kage"));
-assert.match(await readFile("dist/robots.txt", "utf8"), /Sitemap: https:\/\/saadar\.dev\/sitemap.xml/);
+const robots = await readFile("dist/robots.txt", "utf8");
+assert.match(robots, /User-agent: \*\nAllow: \//);
+assert.match(robots, /Sitemap: https:\/\/saadar\.dev\/sitemap.xml/);
 for (const path of ["dist/kage/index.html", "dist/404.html", "dist/landing-pages/kage.html"]) {
   const page = await readFile(path, "utf8");
   assert.match(page, /name="robots" content="noindex, follow"/);
