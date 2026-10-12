@@ -90,7 +90,7 @@ export default function CinematicPortfolio() {
       <section id="hero" className="film-hero">
         <div className="hero-wordmark" aria-hidden="true">SAAD AR</div>
         <div className="hero-copy"><p className="eyebrow"><span className="accent-dash"/> SAAD AR — AI, WEB & MOBILE DEVELOPER</p><h1>Hi, I’m<br/><em>Saad AR.</em></h1><p className="hero-description">I’m Saad AR, also known as Saadar. I build digital products<br className="desktop-break"/> through machine learning, web, and mobile development.</p><div className="hero-actions"><a href="#projects" className="text-link">Explore my work <ArrowUpRight size={18}/></a></div></div>
-        <div className="hero-object"><div className="object-orbit" aria-hidden="true"/><img src="/images/saadar-saad-ar-portrait.png" alt="Portrait of Saad AR, developer" className="hero-portrait" width={1254} height={1254} loading="eager" fetchPriority="high"/><div className="object-caption"><span className="status-dot"/> AT THE INTERSECTION OF CODE & CURIOSITY</div></div>
+        <div className="hero-object"><div className="object-orbit" aria-hidden="true"/><img src="/images/saadar-saad-ar-portrait.png" alt="Portrait of Saad AR, developer" className="hero-portrait" width={1254} height={1254} loading="eager"/><div className="object-caption"><span className="status-dot"/> AT THE INTERSECTION OF CODE & CURIOSITY</div></div>
         <div className="hero-bottom"><a href="#about" className="scroll-cue"><ArrowDown size={18}/><span>SCROLL TO DISCOVER</span></a><p>AI / ML &nbsp; · &nbsp; FULL-STACK &nbsp; · &nbsp; MOBILE</p><span className="edition">PORTFOLIO — 2026</span></div>
       </section>
       <section id="about" className="film-section about-section">
